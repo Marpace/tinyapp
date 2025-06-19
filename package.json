@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/Marpace/tinyapp/issues"
   },
-  "homepage": "https://github.com/Marpace/tinyapp#readme"
+  "homepage": "https://github.com/Marpace/tinyapp#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
 }
