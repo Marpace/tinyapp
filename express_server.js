@@ -1,24 +1,14 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
+const {generateRandomString} = require("./utils");
+
+
 
 const urlDatabase = {
   b2xVn2: "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
 };
-
-
-const generateRandomString = (length) => {
-  let result = '';
-  const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  
-  // Loop to generate a random string of the given length
-  for (let i = 0; i < length; i++) {
-      const random = Math.floor(Math.random() * characters.length);
-      result += characters.charAt(random);
-  }
-  return result;
-}
 
 
 app.set("view engine", "ejs");
@@ -63,9 +53,20 @@ app.post("/urls", (req, res) => {
   const id = generateRandomString(6);
 
   urlDatabase[id] = longURL;
-  res.redirect(`/urls/${id}`); 
+  res.status(201).redirect(`/urls/${id}`); 
 });
 
+app.post("/urls/:id/delete", (req, res) => {
+  const id = req.params.id;
+
+  if(!urlDatabase[id]) {
+    res.status(404).send("<h1>Something went wrong! could not delete URL</h1>")
+  } 
+  else {
+    delete urlDatabase[id];
+    res.status(200).redirect('/urls');
+  }
+});
 
 
 
