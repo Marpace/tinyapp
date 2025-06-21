@@ -70,7 +70,8 @@ app.post("/urls/:id/delete", (req, res) => {
 
 app.post("/urls/:id/update", (req, res) => {
   const id = req.params.id;
- 
+  const updatedURL = req.body.updatedURL
+
   if(!urlDatabase[id]) {
     res.status(404).send("<h1>Something went wrong! could not update URL</h1>")
   } 
@@ -78,6 +79,12 @@ app.post("/urls/:id/update", (req, res) => {
     urlDatabase[id] = updatedURL;
     res.status(200).redirect('/urls');
   }
+});
+
+app.post("/login", (req, res) => {
+  const username = req.body.username;
+
+  res.cookie("username", username).redirect("/urls");
 });
 
 
