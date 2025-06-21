@@ -68,6 +68,18 @@ app.post("/urls/:id/delete", (req, res) => {
   }
 });
 
+app.post("/urls/:id/update", (req, res) => {
+  const id = req.params.id;
+ 
+  if(!urlDatabase[id]) {
+    res.status(404).send("<h1>Something went wrong! could not update URL</h1>")
+  } 
+  else {
+    urlDatabase[id] = updatedURL;
+    res.status(200).redirect('/urls');
+  }
+});
+
 
 
 
