@@ -16,7 +16,7 @@ app.set("view engine", "ejs");
 
 /////////////////////// MIDDLEWARE ///////////////////////////
 
-//middleware to convert incoming data from the form
+//middleware parse form data 
 app.use(express.urlencoded({ extended: true }));
 
 //middleware to parse cookies
@@ -29,11 +29,6 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  // console.log(req.cookies['username'])
-  // let username = null;
-  // if(req.cookies && req.cookies['username']) {
-  //   username = req.cookies['username']
-  // }
   const templateVars = { urls: urlDatabase, username: req.cookies['username']};
   res.render("urls_index", templateVars);
 })
@@ -108,10 +103,7 @@ app.post("/logout", (req, res) => {
 });
 
 
-
-
-
-
+//////////////////// START SERVER ///////////////////////////
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
