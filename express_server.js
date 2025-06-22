@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 const {generateRandomString} = require("./utils");
-
+const cookieParser = require("cookie-parser")
 
 
 const urlDatabase = {
@@ -13,9 +13,14 @@ const urlDatabase = {
 
 app.set("view engine", "ejs");
 
+
+/////////////////////// MIDDLEWARE ///////////////////////////
+
 //middleware to convert incoming data from the form
 app.use(express.urlencoded({ extended: true }));
 
+//middleware to parse cookies
+app.use(cookieParser());
 
 /////////////////////// GET ROUTES ///////////////////////////
 
@@ -24,16 +29,28 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  // console.log(req.cookies['username'])
+  // let username = null;
+  // if(req.cookies && req.cookies['username']) {
+  //   username = req.cookies['username']
+  // }
+  const templateVars = { urls: urlDatabase, username: req.cookies['username']};
   res.render("urls_index", templateVars);
 })
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const username = req.cookies['username'] ? req.cookies['username'] : null;
+  const templateVars = {username: username};
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
+  const username = req.cookies['username'] ? req.cookies['username'] : null;
+  const templateVars = { 
+    id: req.params.id, 
+    longURL: urlDatabase[req.params.id],
+    username: username
+  };
   res.render("urls_show", templateVars);
 })
 
@@ -83,8 +100,11 @@ app.post("/urls/:id/update", (req, res) => {
 
 app.post("/login", (req, res) => {
   const username = req.body.username;
-
   res.cookie("username", username).redirect("/urls");
+});
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("username").status(200).redirect("/urls"); 
 });
 
 
