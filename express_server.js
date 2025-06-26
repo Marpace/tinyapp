@@ -57,6 +57,12 @@ app.get("/u/:id", (req, res) => {
   else res.status(301).redirect(longURL)
 });
 
+app.get("/register", (req, res) => {
+  const username = req.cookies['username'] ? req.cookies['username'] : null;
+  const templateVars = {username: username};
+  res.render("register", templateVars);
+});
+
 /////////////////////// POST ROUTES ///////////////////////////
 
 
