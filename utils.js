@@ -43,9 +43,20 @@ const authenticateUser = (email, password, usersDatabse) => {
   return null;
 };
 
+const urlsForUser = (id, urlDatabase) => {
+  const result = {};
+
+  for(const key in urlDatabase) {
+    if(urlDatabase[key].userID === id) result[key] = urlDatabase[key];
+  }
+
+  return result;
+}
+
 module.exports = {
   generateRandomString,
   createUser,
   findUserByEmail,
-  authenticateUser
+  authenticateUser,
+  urlsForUser
 };
