@@ -96,7 +96,7 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-
+  
   //if credentials are valid, returns an authenticated user, otherwise returns null
   const authUser = authenticateUser(email, password, users);
 
