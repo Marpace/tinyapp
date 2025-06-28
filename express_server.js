@@ -8,7 +8,7 @@ const {
   authenticateUser,
   urlsForUser
 } = require("./utils");
-const cookieParser = require("cookie-parser");
+const cookieSession = require("cookie-session");
 const users = require("./data");
 const bcrypt = require("bcryptjs")
 
@@ -30,7 +30,7 @@ app.set("view engine", "ejs");
 /////////////////////// MIDDLEWARE ///////////////////////////
 
 const isAuth = (req, res, next) => {
-  const id = req.cookies["user_id"]; 
+  const id = req.session.user_id; 
 
   if(!id || !users[id]) {
     return res.redirect("/login");
@@ -42,13 +42,16 @@ const isAuth = (req, res, next) => {
 //parse form data
 app.use(express.urlencoded({ extended: true }));
 
-//parse cookies
-app.use(cookieParser());
+
+app.use(cookieSession({
+  name: 'session',
+  signed: false,
+}));
 
 /////////////////////// GET ROUTES ///////////////////////////
 
 app.get("/urls", (req, res) => {
-  const userId = req.cookies['user_id'];
+  const userId = req.session.user_id;
   const loggedIn = users[userId] ? true : false;
   const urls = urlsForUser(userId, urlDatabase);
   const user = users[userId]
@@ -63,13 +66,13 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", isAuth, (req, res) => {
-  const userId = req.cookies['user_id'];
+  const userId = req.session.user_id;
   const templateVars = {user: users[userId]};
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", isAuth, (req, res) => {
-  const userID = req.cookies['user_id'];
+  const userID = req.session.user_id;
   const url = urlDatabase[req.params.id];
 
   if(url.userID !== userID) {
@@ -102,7 +105,7 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  const userId = req.cookies['user_id'];
+  const userId = req.session.user_id;
   const templateVars = {user: users[userId]};
 
   //check if user is already logged in and redirect to /urls
@@ -114,7 +117,7 @@ app.get("/register", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  const userId = req.cookies['user_id'];
+  const userId = req.session.user_id;
   const templateVars = {user: users[userId]};
 
   //check if user is already logged in and redirect to /urls
@@ -138,8 +141,8 @@ app.post("/login", (req, res) => {
     const templateVars = {errorCode: "403", errorMessage: "Invalid Credentials"};
     return res.status(403).render("error", templateVars);
   }
-
-  res.status(200).cookie("user_id", authUser.id).redirect("/urls");
+  req.session.user_id = authUser.id
+  res.status(200).redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
@@ -176,14 +179,15 @@ app.post("/register", (req, res) => {
   const newUser = createUser({email, hashedPassword}, users);
 
   //sets new cookie with the newly created user's id
-  res.status(201).cookie("user_id", newUser.id).redirect("/urls");
+  req.session.user_id = newUser.id
+  res.status(201).redirect("/urls");
 });
 
 //route for adding a new url to the databse
 app.post("/urls", isAuth, (req, res) => {
   const longURL = req.body.longURL;
   const urlID = generateRandomString(6);
-  const userID = req.cookies["user_id"];
+  const userID = req.session.user_id;
 
   const newURL = {longURL, userID}
 
@@ -195,7 +199,7 @@ app.post("/urls", isAuth, (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
   const id = req.params.id;
   const url = urlDatabase[id]
-  const userID = req.cookies["user_id"]
+  const userID = req.session.user_id;
 
   //checks if url does not exist or belongs to another user
   if (!url || url.userID !== userID) {
@@ -214,7 +218,7 @@ app.post("/urls/:id/update", (req, res) => {
   const id = req.params.id;
   const updatedURL = req.body.updatedURL;
   const url = urlDatabase[id]
-  const userID = req.cookies["user_id"]
+  const userID = req.session.user_id;
 
   if (!url || url.userID !== userID) {
     const templateVars = {
@@ -232,6 +236,6 @@ app.post("/urls/:id/update", (req, res) => {
 //////////////////// START SERVER ///////////////////////////
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`App listening on port ${PORT}!`);
 });
 
