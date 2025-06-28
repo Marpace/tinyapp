@@ -14,12 +14,28 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
+
+    <style>
+      .login-form {
+        width: 90%;
+        max-width: 500px;
+        padding: 20px;
+        margin: 100px auto;
+        box-shadow: 4px 4px 15px -7px;
+        border-radius: 10px;
+      }
+      .login-form__legend {
+        margin-bottom: 20px;
+      }
+    </style>
+
     <title>TinyApp</title>
   </head>
   <body>
     <%- include('partials/_header') %>
     <main style="margin: 1em;">
-      <form method="POST" action="/login" style="width: 90%; max-width: 500px; margin: auto">
+      <form method="POST" action="/login" class="login-form" >
+        <legend class="login-form__legend">Login to TinyApp</legend>
         <div class="mb-3">
           <label for="email" class="form-label">Email address</label>
           <input type="email" class="form-control" id="email" name="email">

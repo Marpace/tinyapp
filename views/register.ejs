@@ -14,12 +14,28 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
+
+    <style>
+      .register-form {
+        width: 90%;
+        max-width: 500px;
+        padding: 20px;
+        margin: 100px auto;
+        box-shadow: 4px 4px 15px -7px;
+        border-radius: 10px;
+      }
+      .register-form__legend {
+        margin-bottom: 20px;
+      }
+    </style>
+
     <title>TinyApp</title>
   </head>
   <body>
     <%- include('partials/_header') %>
     <main style="margin: 1em;">
-      <form method="POST" action="/register" style="width: 90%; max-width: 500px; margin: auto">
+      <form method="POST" action="/register" class="register-form">
+        <legend class="register-form__legend">Register</legend>
         <div class="mb-3">
           <label for="email" class="form-label">Email address</label>
           <input type="email" class="form-control" id="email" name="email">
