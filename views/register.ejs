@@ -16,37 +16,33 @@
     />
 
     <style>
-      .create-form {
+      .register-form {
         width: 90%;
         max-width: 500px;
         padding: 20px;
         margin: 100px auto;
         box-shadow: 4px 4px 15px -7px;
         border-radius: 10px;
-
       }
-      .create-form__legend {
+      .register-form__legend {
         margin-bottom: 20px;
       }
     </style>
 
-    <title>New URL - TinyApp Example</title>
+    <title>TinyApp</title>
   </head>
-
   <body>
     <%- include('partials/_header') %>
-
-    <main style="margin: 1em;">
-      <form class="create-form" action="/urls" method="POST">
-        <legend class="create-form__legend">Create TinyURL</legend>
-        <div class="form-group mb-2">
-          <label for="longURL">Enter a URL:</label>
-          <input
-            class="form-control"
-            type="text"
-            name="longURL"
-            placeholder="http://"
-          />
+    <main style="margin: 1em;"> 
+      <form method="POST" action="/register" class="register-form">
+        <legend class="register-form__legend">Create Account</legend>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email address</label>
+          <input type="email" class="form-control" id="email" name="email">
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" class="form-control" id="password" name="password">
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>

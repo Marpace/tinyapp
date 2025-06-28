@@ -16,40 +16,23 @@
     />
 
     <style>
-      .create-form {
-        width: 90%;
-        max-width: 500px;
-        padding: 20px;
-        margin: 100px auto;
-        box-shadow: 4px 4px 15px -7px;
-        border-radius: 10px;
-
-      }
-      .create-form__legend {
-        margin-bottom: 20px;
+      main {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        justify-content: center;
+        align-items: center;
+        height: 50vh;
       }
     </style>
 
-    <title>New URL - TinyApp Example</title>
+    <title>TinyApp</title>
   </head>
-
   <body>
-    <%- include('partials/_header') %>
-
     <main style="margin: 1em;">
-      <form class="create-form" action="/urls" method="POST">
-        <legend class="create-form__legend">Create TinyURL</legend>
-        <div class="form-group mb-2">
-          <label for="longURL">Enter a URL:</label>
-          <input
-            class="form-control"
-            type="text"
-            name="longURL"
-            placeholder="http://"
-          />
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </form>
+      <h1>Error (<%= errorCode %>)</h1>
+      <h4><%= errorMessage %></h4>
+      <a href="/urls">Back to TinyApp home page</a>
     </main>
     <!-- Bootstrap JS -->
     <script

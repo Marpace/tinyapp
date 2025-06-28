@@ -13,26 +13,24 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav justify-content-between" style="width: 100%; padding-right: 20px">
+      <div class="navbar-nav justify-content-between " style="width: 100%; align-items: center; padding-right: 20px;">
         <div class="row">
           <a class="nav-item nav-link" href="/urls">My URLs</a>
           <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
         </div>
-        <% if(username) { %>
+        <% if(user) { %>
           <div class="row" style="align-items: center;">
-            <p class="col-auto" style="align-items: center; margin-bottom: 0;">Logged in as <%= username %></p>
+            <p class="col-auto" style="align-items: center; margin-bottom: 0;">Logged in as <%= user.email %></p>
             <form method="POST" action="/logout">
               <button type="submit" class="btn btn-outline-dark">Logout</button>
             </form>
           </div>
         <% } else {%> 
         <form method="POST" action="/login" class="row" style="gap: 10px">
-          <div>
-            <input type="text" name="username" class="form-control">
-          </div>
-          <div >
-            <button type="submit" class="btn btn-outline-dark">Login</button>
-          </div>
+          <div class="user-links" style="display: flex; gap: 20px;">
+          <a href="/login" style="color: white; text-decoration: underline;">Login</a>
+          <a href="/register" style="color: white; text-decoration: underline;">Register</a>
+        </div>
         </form>
         <% } %>
       </div>
