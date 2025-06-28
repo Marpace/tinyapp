@@ -68,6 +68,12 @@ app.get("/register", (req, res) => {
   res.render("register", templateVars);
 });
 
+app.get("/login", (req, res) => {
+  const userId = req.cookies['user_id']; 
+  const templateVars = {user: users[userId]};
+  res.render("login", templateVars);
+})
+
 /////////////////////// POST ROUTES ///////////////////////////
 
 
@@ -119,12 +125,12 @@ app.post("/register", (req, res) => {
 
   //checks if email or password fields are empty when user submits form
   if(email === "" || password === "") {
-    return res.status(400).send("<h1>404 - No email or password was entered.</h1>")
+    return res.status(400).send("<h1>400 - No email or password was entered.</h1>")
   }
   
   //checks if user with the email proivided already exists 
   if(findUserByEmail(email, users)) {
-    return res.status(400).send("<h1>404 - Email provided is already registered</h1>")
+    return res.status(400).send("<h1>400 - Email provided is already registered</h1>")
   }
 
   const newUser = createUser({email, password}, users);
