@@ -21,6 +21,16 @@ app.set("view engine", "ejs");
 
 /////////////////////// MIDDLEWARE ///////////////////////////
 
+const isAuth = (req, res, next) => {
+  const id = req.cookies["user_id"]; 
+
+  if(!id || !users[id]) {
+    return res.redirect("/login");
+  }
+
+  next();
+}
+
 //parse form data
 app.use(express.urlencoded({ extended: true }));
 
@@ -46,7 +56,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-app.get("/urls/new", (req, res) => {
+app.get("/urls/new", isAuth, (req, res) => {
   const userId = req.cookies['user_id'];
   const templateVars = {user: users[userId]};
   res.render("urls_new", templateVars);
@@ -82,12 +92,24 @@ app.get("/u/:id", (req, res) => {
 app.get("/register", (req, res) => {
   const userId = req.cookies['user_id'];
   const templateVars = {user: users[userId]};
+
+  //check if user is already logged in and redirect to /urls
+  if(userId && users[userId]) {
+    return res.redirect("/urls");
+  }
+
   res.render("register", templateVars);
 });
 
 app.get("/login", (req, res) => {
   const userId = req.cookies['user_id'];
   const templateVars = {user: users[userId]};
+
+  //check if user is already logged in and redirect to /urls
+  if(userId && users[userId]) {
+    return res.redirect("/urls");
+  }
+
   res.render("login", templateVars);
 });
 
@@ -96,7 +118,7 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  
+
   //if credentials are valid, returns an authenticated user, otherwise returns null
   const authUser = authenticateUser(email, password, users);
 
@@ -145,7 +167,7 @@ app.post("/register", (req, res) => {
 });
 
 
-app.post("/urls", (req, res) => {
+app.post("/urls", isAuth, (req, res) => {
   const longURL = req.body.longURL;
   const id = generateRandomString(6);
 
