@@ -10,4 +10,21 @@ const generateRandomString = (length) => {
   return result;
 }
 
-module.exports = {generateRandomString};
+const createUser = (newUser, userDatabase) => {
+  //generate random id 
+  const id = generateRandomString(5);
+  
+  //checks if user with that id already exists
+  // if it does, runs the function again (recursion)
+  if(userDatabase[id]) return createUser(newUser, userDatabase);
+
+  //set id property to newUser object 
+  newUser["id"] = id;
+
+  //add new user to user database
+  userDatabase[id] = newUser
+
+  return newUser;
+}
+
+module.exports = {generateRandomString, createUser};

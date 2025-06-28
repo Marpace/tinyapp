@@ -1,8 +1,9 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
-const {generateRandomString} = require("./utils");
+const {generateRandomString, createUser} = require("./utils");
 const cookieParser = require("cookie-parser")
+const users = require("./data")
 
 
 const urlDatabase = {
@@ -108,6 +109,21 @@ app.post("/logout", (req, res) => {
   res.clearCookie("username").status(200).redirect("/urls"); 
 });
 
+app.post("/register", (req, res) => {
+  const email = req.body.email
+  const password = req.body.password
+
+  const newUser = createUser({email, password}, users);
+
+  console.log(users)
+
+
+  //sets new cookie with the newly created user's id 
+  res.cookie("user_id", newUser.id) 
+
+  //status code 201 - successfully created new user
+  res.status(201).redirect("/urls");
+})
 
 //////////////////// START SERVER ///////////////////////////
 
