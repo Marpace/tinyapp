@@ -10,6 +10,7 @@ const {
 } = require("./utils");
 const cookieParser = require("cookie-parser");
 const users = require("./data");
+const bcrypt = require("bcryptjs")
 
 
 const urlDatabase = {
@@ -51,8 +52,6 @@ app.get("/urls", (req, res) => {
   const loggedIn = users[userId] ? true : false;
   const urls = urlsForUser(userId, urlDatabase);
   const user = users[userId]
-
-  console.log(urlDatabase)
 
   const templateVars = { 
     urls, 
@@ -151,10 +150,11 @@ app.post("/logout", (req, res) => {
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
 
 
-  //checks if email or password fields are empty when user submits form
-  if (email === "" || password === "") {
+  //trims and checks if email or password fields are empty when user submits form
+  if (email.trim() === "" || password.trim() === "") {
     const templateVars = {
       errorCode: "400",
       errorMessage: "No email or password was entered"
@@ -173,13 +173,13 @@ app.post("/register", (req, res) => {
     return res.status(400).render("error", templateVars);
   }
 
-  const newUser = createUser({email, password}, users);
+  const newUser = createUser({email, hashedPassword}, users);
 
   //sets new cookie with the newly created user's id
   res.status(201).cookie("user_id", newUser.id).redirect("/urls");
 });
 
-
+//route for adding a new url to the databse
 app.post("/urls", isAuth, (req, res) => {
   const longURL = req.body.longURL;
   const urlID = generateRandomString(6);

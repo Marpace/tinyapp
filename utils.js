@@ -1,3 +1,5 @@
+const bcrypt = require("bcryptjs");
+
 const generateRandomString = (length) => {
   let result = '';
   const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -34,10 +36,11 @@ const findUserByEmail = (email, usersDatabase) => {
   return null;
 };
 
-const authenticateUser = (email, password, usersDatabse) => {
-  for (const key in usersDatabse) {
-    if (usersDatabse[key].email === email && usersDatabse[key].password === password) {
-      return usersDatabse[key];
+const authenticateUser = (email, password, usersDatabase) => {
+  console.log(usersDatabase)
+  for (const key in usersDatabase) {
+    if (usersDatabase[key].email === email && bcrypt.compareSync(password, usersDatabase[key].hashedPassword)) {
+      return usersDatabase[key];
     }
   }
   return null;
