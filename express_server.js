@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
-const {generateRandomString, createUser} = require("./utils");
+const {generateRandomString, createUser, findUserByEmail} = require("./utils");
 const cookieParser = require("cookie-parser")
 const users = require("./data")
 
@@ -104,23 +104,30 @@ app.post("/urls/:id/update", (req, res) => {
   }
 });
 
-app.post("/login", (req, res) => {
-  const username = req.body.username;
-  res.cookie("username", username).redirect("/urls");
-});
+// app.post("/login", (req, res) => {
+//   const email = req.body.email;
+//   res.cookie("username", username).redirect("/urls");
+// });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username").status(200).redirect("/urls"); 
+  res.clearCookie("user_id").status(200).redirect("/urls"); 
 });
 
 app.post("/register", (req, res) => {
   const email = req.body.email
   const password = req.body.password
 
+  //checks if email or password fields are empty when user submits form
+  if(email === "" || password === "") {
+    return res.status(400).send("<h1>404 - No email or password was entered.</h1>")
+  }
+  
+  //checks if user with the email proivided already exists 
+  if(findUserByEmail(email, users)) {
+    return res.status(400).send("<h1>404 - Email provided is already registered</h1>")
+  }
+
   const newUser = createUser({email, password}, users);
-
-  console.log(users)
-
 
   //sets new cookie with the newly created user's id 
   res.cookie("user_id", newUser.id) 

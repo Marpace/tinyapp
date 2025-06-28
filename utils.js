@@ -27,4 +27,11 @@ const createUser = (newUser, userDatabase) => {
   return newUser;
 }
 
-module.exports = {generateRandomString, createUser};
+const findUserByEmail = (email, users) => {
+  for(const key in users) {
+    if(users[key].email === email) return users[key];
+  }
+  return null;
+}
+
+module.exports = {generateRandomString, createUser, findUserByEmail};
