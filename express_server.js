@@ -7,22 +7,11 @@ const {
   findUserByEmail,
   authenticateUser,
   urlsForUser
-} = require("./utils");
+} = require("./helpers");
 const cookieSession = require("cookie-session");
-const users = require("./data");
+const data = require("./data");
 const bcrypt = require("bcryptjs")
 
-
-const urlDatabase = {
-  b6UTxQ: {
-    longURL: "https://www.tsn.ca",
-    userID: "aJ48lW",
-  },
-  i3BoGr: {
-    longURL: "https://www.google.ca",
-    userID: "aJ48lW",
-  },
-};
 
 //set view engine to ejs
 app.set("view engine", "ejs");
@@ -32,7 +21,7 @@ app.set("view engine", "ejs");
 const isAuth = (req, res, next) => {
   const id = req.session.user_id; 
 
-  if(!id || !users[id]) {
+  if(!id || !data.users[id]) {
     return res.redirect("/login");
   }
 
@@ -52,9 +41,9 @@ app.use(cookieSession({
 
 app.get("/urls", (req, res) => {
   const userId = req.session.user_id;
-  const loggedIn = users[userId] ? true : false;
-  const urls = urlsForUser(userId, urlDatabase);
-  const user = users[userId]
+  const loggedIn = data.users[userId] ? true : false;
+  const urls = urlsForUser(userId, data.urlDatabase);
+  const user = data.users[userId]
 
   const templateVars = { 
     urls, 
@@ -67,13 +56,13 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", isAuth, (req, res) => {
   const userId = req.session.user_id;
-  const templateVars = {user: users[userId]};
+  const templateVars = {user: data.users[userId]};
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", isAuth, (req, res) => {
   const userID = req.session.user_id;
-  const url = urlDatabase[req.params.id];
+  const url = data.urlDatabase[req.params.id];
 
   if(url.userID !== userID) {
     const templateVars = {errorCode: "401", errorMessage: "The URL you are trying to access, belongs to another user"}
@@ -82,8 +71,8 @@ app.get("/urls/:id", isAuth, (req, res) => {
 
   const templateVars = {
     id: req.params.id,
-    longURL: urlDatabase[req.params.id].longURL,
-    user: users[userId]
+    longURL: data.urlDatabase[req.params.id].longURL,
+    user: data.users[userID]
   };
 
   res.render("urls_show", templateVars);
@@ -91,7 +80,7 @@ app.get("/urls/:id", isAuth, (req, res) => {
 
 app.get("/u/:id", (req, res) => {
   const id = req.params.id;
-  const longURL = urlDatabase[id].longURL;
+  const longURL = data.urlDatabase[id].longURL;
 
   if (!longURL) {
     const templateVars = {
@@ -106,10 +95,10 @@ app.get("/u/:id", (req, res) => {
 
 app.get("/register", (req, res) => {
   const userId = req.session.user_id;
-  const templateVars = {user: users[userId]};
+  const templateVars = {user: data.users[userId]};
 
   //check if user is already logged in and redirect to /urls
-  if(userId && users[userId]) {
+  if(userId && data.users[userId]) {
     return res.redirect("/urls");
   }
 
@@ -118,10 +107,10 @@ app.get("/register", (req, res) => {
 
 app.get("/login", (req, res) => {
   const userId = req.session.user_id;
-  const templateVars = {user: users[userId]};
+  const templateVars = {user: data.users[userId]};
 
   //check if user is already logged in and redirect to /urls
-  if(userId && users[userId]) {
+  if(userId && data.users[userId]) {
     return res.redirect("/urls");
   }
 
@@ -135,7 +124,7 @@ app.post("/login", (req, res) => {
   const password = req.body.password;
 
   //if credentials are valid, returns an authenticated user, otherwise returns null
-  const authUser = authenticateUser(email, password, users);
+  const authUser = authenticateUser(email, password, data.users);
 
   if (!authUser) {
     const templateVars = {errorCode: "403", errorMessage: "Invalid Credentials"};
@@ -147,7 +136,8 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   //remove cookie with user id
-  res.status(200).clearCookie("user_id").redirect("/login");
+  req.session = null
+  res.status(200).redirect("/login");
 });
 
 app.post("/register", (req, res) => {
@@ -165,7 +155,7 @@ app.post("/register", (req, res) => {
     return res.status(400).render("error", templateVars);
   }
   
-  const foundUser = findUserByEmail(email, users);
+  const foundUser = findUserByEmail(email, data.users);
 
   //checks if user with the email proivided already exists
   if (foundUser) {
@@ -176,7 +166,7 @@ app.post("/register", (req, res) => {
     return res.status(400).render("error", templateVars);
   }
 
-  const newUser = createUser({email, hashedPassword}, users);
+  const newUser = createUser({email, hashedPassword}, data.users);
 
   //sets new cookie with the newly created user's id
   req.session.user_id = newUser.id
@@ -192,13 +182,13 @@ app.post("/urls", isAuth, (req, res) => {
   const newURL = {longURL, userID}
 
 
-  urlDatabase[urlID] = newURL;
+  data.urlDatabase[urlID] = newURL;
   res.status(201).redirect(`/urls/${urlID}`);
 });
 
 app.post("/urls/:id/delete", (req, res) => {
   const id = req.params.id;
-  const url = urlDatabase[id]
+  const url = data.urlDatabase[id]
   const userID = req.session.user_id;
 
   //checks if url does not exist or belongs to another user
@@ -210,14 +200,14 @@ app.post("/urls/:id/delete", (req, res) => {
     return res.status(400).render("error", templateVars);
   } 
 
-  delete urlDatabase[id];
+  delete data.urlDatabase[id];
   res.status(200).redirect('/urls');
 });
 
 app.post("/urls/:id/update", (req, res) => {
   const id = req.params.id;
   const updatedURL = req.body.updatedURL;
-  const url = urlDatabase[id]
+  const url = data.urlDatabase[id]
   const userID = req.session.user_id;
 
   if (!url || url.userID !== userID) {
@@ -228,7 +218,7 @@ app.post("/urls/:id/update", (req, res) => {
     return res.status(400).render("error", templateVars);
   } 
 
-  urlDatabase[id].longURL = updatedURL;
+  data.urlDatabase[id].longURL = updatedURL;
   res.status(200).redirect('/urls');
 });
 

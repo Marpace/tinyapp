@@ -33,7 +33,7 @@ const findUserByEmail = (email, usersDatabase) => {
   for (const key in usersDatabase) {
     if (usersDatabase[key].email === email) return usersDatabase[key];
   }
-  return null;
+  return undefined;
 };
 
 const authenticateUser = (email, password, usersDatabase) => {
