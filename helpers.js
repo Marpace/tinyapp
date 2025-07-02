@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const data = require("./data");
 
 const generateRandomString = (length) => {
 
@@ -68,10 +69,21 @@ const urlsForUser = (id, urlDatabase) => {
   return result;
 };
 
+const isAuth = (req, res, next) => {
+  const id = req.session.user_id;
+
+  if (!id || !data.users[id]) {
+    return res.redirect("/login");
+  }
+
+  next();
+};
+
 module.exports = {
   generateRandomString,
   createUser,
   findUserByEmail,
   authenticateUser,
-  urlsForUser
+  urlsForUser,
+  isAuth
 };
