@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 
 const generateRandomString = (length) => {
+
   let result = '';
   const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
   
@@ -9,10 +10,12 @@ const generateRandomString = (length) => {
     const random = Math.floor(Math.random() * characters.length);
     result += characters.charAt(random);
   }
+
   return result;
 };
 
 const createUser = (newUser, userDatabase) => {
+
   //generate random id
   const id = generateRandomString(5);
   
@@ -30,31 +33,40 @@ const createUser = (newUser, userDatabase) => {
 };
 
 const findUserByEmail = (email, usersDatabase) => {
+
+  //if user with given email exists, return entire user object
   for (const key in usersDatabase) {
     if (usersDatabase[key].email === email) return usersDatabase[key];
   }
+
   return undefined;
 };
 
 const authenticateUser = (email, password, usersDatabase) => {
-  console.log(usersDatabase)
-  for (const key in usersDatabase) {
-    if (usersDatabase[key].email === email && bcrypt.compareSync(password, usersDatabase[key].hashedPassword)) {
-      return usersDatabase[key];
+
+  const user = findUserByEmail(email, usersDatabase);
+  //check if user with given email exists
+  if (user) {
+    //use bcrypt to compare user's password and given password
+    const passwordsMatch = bcrypt.compareSync(password, user.hashedPassword);
+    if (passwordsMatch) {
+      return user;
     }
   }
   return null;
 };
 
 const urlsForUser = (id, urlDatabase) => {
+
   const result = {};
 
-  for(const key in urlDatabase) {
-    if(urlDatabase[key].userID === id) result[key] = urlDatabase[key];
+  //loop through database and add all url objects, matching the given id, to the result object
+  for (const key in urlDatabase) {
+    if (urlDatabase[key].userID === id) result[key] = urlDatabase[key];
   }
 
   return result;
-}
+};
 
 module.exports = {
   generateRandomString,

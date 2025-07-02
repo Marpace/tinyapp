@@ -19,10 +19,22 @@
       main {
         display: flex;
         flex-direction: column;
-        gap: 30px;
         justify-content: center;
         align-items: center;
         height: 50vh;
+      }
+      
+      .container {
+        padding: 50px;
+        width: 90%;
+        max-width: 500px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        justify-content: center;
+        align-items: center;
+        border-radius: 10px;
+        box-shadow: 4px 4px 15px -7px;
       }
     </style>
 
@@ -30,9 +42,11 @@
   </head>
   <body>
     <main style="margin: 1em;">
-      <h1>Error (<%= errorCode %>)</h1>
-      <h4><%= errorMessage %></h4>
-      <a href="/urls">Back to TinyApp home page</a>
+      <div class="container">
+        <h1>Error (<%= errorCode %>)</h1>
+        <h4><%= errorMessage %></h4>
+        <a href="/urls" class="btn btn-outline-primary">Back to TinyApp home page</a>
+      </div>
     </main>
     <!-- Bootstrap JS -->
     <script
